@@ -1,17 +1,17 @@
 import cloudscraper
 import hashlib
 import datetime
-import os
+# import os
 import pandas as pd
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
 URL_LIST = [
-    ('dummy.html', 'Notebook'),
-    ('dummy_processor.html', 'CPU')
+    # ('dummy.html', 'notebook')
+    ('http://viraindo.com/notebook.html', 'notebook')
 ]
 
-DB_URI = 'mongodb://localhost:27017/'
+# DB_URI = 'mongodb://localhost:27017/'
 
 def safe_cast(val, to_type=None, default=None):
     try:
@@ -23,12 +23,18 @@ def safe_cast(val, to_type=None, default=None):
         return default
 
 def scrape_data(url, category=""):
-    # scraper = cloudscraper.create_scraper(browser={'browser': 'firefox','platform': 'windows','mobile': False})
-    cwd = os.getcwd()
-    os.chdir(cwd)
-    html = open(url, "r")
+    scraper = cloudscraper.create_scraper(browser={'browser': 'firefox','platform': 'windows','mobile': False})
+    # cwd = os.getcwd()
+    # os.chdir(cwd)
+    # html = open(url, "r")
+    res = scraper.get(url)
+    if res.status_code != 200:
+        print(f'Failed to get {url}')
+        return
+    html = res.text
     soup = BeautifulSoup(html, 'html.parser')
     rows = soup.findAll('tr')
+    fetch_date = datetime.datetime.now().strftime("%Y-%m-%d")
     listings = []
     for row in rows:
         data = row.findAll('td')
@@ -45,22 +51,30 @@ def scrape_data(url, category=""):
                 listing['category'] = category
                 listing['name'] = name
                 listing['price'] = price
+                listing['date'] = fetch_date
                 listings.append(listing)
 
     return listings
 
-def save_to_db(items, category):
-    if len(items) > 0:
-        with MongoClient(DB_URI) as client:
-            coll = client['viraindo'][category]
+# def save_to_db(items, category):
+#     if len(items) > 0:
+#         with MongoClient(DB_URI) as client:
+#             coll = client['viraindo'][category]
 
-            if coll.estimated_document_count() > 0:
-                print("Data already exists")
-            else:
-                df = pd.DataFrame(items)
-                df = df.drop_duplicates(subset='item_id', keep='first')
-                data = df.to_dict(orient='records')
-                coll.insert_many(data)
+#             if coll.estimated_document_count() > 0:
+#                 print("Data already exists")
+#             else:
+#                 df = pd.DataFrame(items)
+#                 df = df.drop_duplicates(subset='item_id', keep='first')
+#                 data = df.to_dict(orient='records')
+#                 coll.insert_many(data)
+
+def save_to_csv(items, category):
+    if len(items) > 0:
+            # finish_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+            # save_fname = 'viraindo_'+ category + "_" + finish_time + '.csv'
+            save_fname = 'viraindo_'+ category + '.csv'
+            pd.DataFrame(items).to_csv(save_fname, ',', mode='a', index=False)
 
 if __name__ == '__main__':
     for url, category in URL_LIST:
@@ -69,7 +83,7 @@ if __name__ == '__main__':
         for item in items[:5]:
             print(item)
 
-        save_to_db(items, category)
+        save_to_csv(items, category)
 
         # if len(items) > 0:
         #     finish_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
