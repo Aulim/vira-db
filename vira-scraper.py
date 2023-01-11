@@ -73,7 +73,7 @@ def save_to_csv(items, category):
     if len(items) > 0:
             # finish_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
             # save_fname = 'viraindo_'+ category + "_" + finish_time + '.csv'
-            save_fname = 'viraindo_'+ category + '.csv'
+            save_fname = 'data/viraindo_'+ category + '.csv'
             pd.DataFrame(items).to_csv(save_fname, ',', mode='a', index=False)
 
 if __name__ == '__main__':
