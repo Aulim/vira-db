@@ -13,6 +13,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.8.10" # install the python version needed
+          architecture: "x64"
           
       - name: install python packages
         run: |
