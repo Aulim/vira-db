@@ -1,10 +1,10 @@
 name: scrap_vira_notebook_data
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 17 * * *'
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.0.4
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
