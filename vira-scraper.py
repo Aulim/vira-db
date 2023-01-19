@@ -1,17 +1,13 @@
 import cloudscraper
 import hashlib
 import datetime
-# import os
 import pandas as pd
 from bs4 import BeautifulSoup
-# from pymongo import MongoClient
 
 URL_LIST = [
     # ('dummy.html', 'notebook')
     ('http://viraindo.com/notebook.html', 'notebook')
 ]
-
-# DB_URI = 'mongodb://localhost:27017/'
 
 def safe_cast(val, to_type=None, default=None):
     try:
@@ -24,9 +20,6 @@ def safe_cast(val, to_type=None, default=None):
 
 def scrape_data(url, category=""):
     scraper = cloudscraper.create_scraper(browser={'browser': 'firefox','platform': 'windows','mobile': False})
-    # cwd = os.getcwd()
-    # os.chdir(cwd)
-    # html = open(url, "r")
     res = scraper.get(url)
     if res.status_code != 200:
         print(f'Failed to get {url}')
@@ -56,23 +49,8 @@ def scrape_data(url, category=""):
 
     return listings
 
-# def save_to_db(items, category):
-#     if len(items) > 0:
-#         with MongoClient(DB_URI) as client:
-#             coll = client['viraindo'][category]
-
-#             if coll.estimated_document_count() > 0:
-#                 print("Data already exists")
-#             else:
-#                 df = pd.DataFrame(items)
-#                 df = df.drop_duplicates(subset='item_id', keep='first')
-#                 data = df.to_dict(orient='records')
-#                 coll.insert_many(data)
-
 def save_to_csv(items, category):
     if len(items) > 0:
-            # finish_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
-            # save_fname = 'viraindo_'+ category + "_" + finish_time + '.csv'
             save_fname = 'data/viraindo_'+ category + '.csv'
             pd.DataFrame(items).to_csv(save_fname, ',', mode='a', index=False)
 
@@ -84,8 +62,3 @@ if __name__ == '__main__':
             print(item)
 
         save_to_csv(items, category)
-
-        # if len(items) > 0:
-        #     finish_time = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
-        #     save_fname = 'viraindo_'+ category + "_" + finish_time + '.csv'
-        #     pd.DataFrame(items).to_csv(save_fname, ',', index=False)
