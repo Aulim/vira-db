@@ -27,7 +27,7 @@ def scrape_data(url, category=""):
     html = res.text
     soup = BeautifulSoup(html, 'html.parser')
     rows = soup.findAll('tr')
-    fetch_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    fetch_date = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=+7))).strftime("%Y-%m-%d")
     listings = []
     for row in rows:
         data = row.findAll('td')
