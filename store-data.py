@@ -16,10 +16,8 @@ def get_prev_month():
 def save_split_old_new(df: pd.DataFrame, category: str):
     date = get_today_date()
     old_data = df.query('date != @date')
-    new_data = df.query('date == @date')
-    # print(get_prev_month())
+    new_data = df.query('date == @date').reset_index(drop=True)
     old_fname = 'data/viraindo_' + get_prev_month() + '.pkl'
-    # print(old_fname)
     old_data.to_pickle(old_fname)
     new_fname = 'data/viraindo_'+ category + '.csv'
     new_data.to_csv(new_fname)
@@ -28,3 +26,5 @@ def save_split_old_new(df: pd.DataFrame, category: str):
 if __name__ == '__main__':
     df = load_old_csv('notebook')
     save_split_old_new(df, 'notebook')
+    # df = pd.read_pickle('data/viraindo_2023-04.pkl')
+    # print(df.head())
