@@ -20,7 +20,7 @@ def save_split_old_new(df: pd.DataFrame, category: str):
     old_fname = 'data/viraindo_' + get_prev_month() + '.pkl'
     old_data.to_pickle(old_fname)
     new_fname = 'data/viraindo_'+ category + '.csv'
-    new_data.to_csv(new_fname)
+    new_data.to_csv(new_fname, index=False)
     assert len(df) == len(old_data) + len(new_data)
 
 if __name__ == '__main__':
